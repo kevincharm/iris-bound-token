@@ -161,7 +161,7 @@ contract IrisBoundToken is ERC721Enumerable {
                         "+",
                         "1", // broadcast
                         "+",
-                        "Mint", // title
+                        "Reclaim", // title
                         "+",
                         "IBT #",
                         tokenId.toString(),
