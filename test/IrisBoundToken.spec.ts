@@ -4,6 +4,9 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { IrisBoundToken, IrisBoundToken__factory } from '../typechain-types'
 import { getProof, getRoot, prepareWorldID, registerIdentity, setUpWorldID } from './utils/worldId'
 
+const EPNS_COMM_POLYGON = '0xb3971BCef2D791bc4027BbfedFb47319A4AAaaAa'
+const EPNS_CHANNEL_ADDRESS = '0x97248C0ddC583537a824A7ad5Ee92D5f4525bcAa'
+
 describe('IrisBoundToken', () => {
     let walletA: SignerWithAddress
     let walletB: SignerWithAddress
@@ -13,7 +16,14 @@ describe('IrisBoundToken', () => {
         ;[walletA, walletB] = signers
         await prepareWorldID()
         const worldIdAddress = await setUpWorldID()
-        ibt = await new IrisBoundToken__factory(walletA).deploy(worldIdAddress, 1)
+        ibt = await new IrisBoundToken__factory(walletA).deploy(
+            'Iris-Bound Token',
+            'IBT',
+            worldIdAddress,
+            1,
+            EPNS_COMM_POLYGON,
+            EPNS_CHANNEL_ADDRESS
+        )
     })
 
     it('mints an IBT', async () => {

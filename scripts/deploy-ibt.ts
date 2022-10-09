@@ -5,6 +5,8 @@ import { IrisBoundToken__factory } from '../typechain-types'
 
 // https://developer.worldcoin.org/api/v1/contracts
 const WORLD_ID_INSTANCE = '0xD81dE4BCEf43840a2883e5730d014630eA6b7c4A'
+const EPNS_COMM_POLYGON = '0xb3971BCef2D791bc4027BbfedFb47319A4AAaaAa'
+const EPNS_CHANNEL_ADDRESS = '0x97248C0ddC583537a824A7ad5Ee92D5f4525bcAa'
 
 async function main() {
     const { chainId } = await ethers.provider.getNetwork()
@@ -13,9 +15,13 @@ async function main() {
     const [deployer] = await ethers.getSigners()
     console.log(`Deployer: ${deployer.address}`)
 
-    const ibtConstructorArgs: [string, BigNumberish] = [
+    const ibtConstructorArgs: [string, string, string, BigNumberish, string, string] = [
+        'Iris-Bound Token',
+        'IBT',
         WORLD_ID_INSTANCE /** worldId instance */,
         1 /** groupId */,
+        EPNS_COMM_POLYGON,
+        EPNS_CHANNEL_ADDRESS,
     ]
 
     // Deploy IBT
@@ -26,7 +32,7 @@ async function main() {
     await ibt.deployed()
     console.log(`IrisBoundToken deployed to: ${ibt.address}`)
 
-    console.log('Waiting ~2min for Etherscan to confirm deployment...')
+    console.log('Waiting ~1min for Etherscan to confirm deployment...')
     await new Promise((resolve) => setTimeout(resolve, 60_000))
 
     await run('verify:verify', {

@@ -17,8 +17,8 @@ const config: HardhatUserConfig = {
         hardhat: {
             forking: {
                 enabled: true,
-                url: process.env.MAINNET_URL as string,
-                blockNumber: 15592200,
+                url: process.env.MATIC_URL as string,
+                blockNumber: 34118330,
             },
             accounts: {
                 count: 10,

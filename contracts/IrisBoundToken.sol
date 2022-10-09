@@ -2,13 +2,18 @@
 pragma solidity ^0.8;
 
 import {IERC721, ERC721, ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IWorldID} from "./vendor/IWorldID.sol";
+import {IPUSHCommInterface} from "./vendor/IPUSHCommInterface.sol";
 
 /// @title IrisBoundToken
 /// @author kevincharm, maggo, Nico Gallardo
 /// @notice A non-transferrable token that is bound to a person's Iris. Verifies proofs-of-personhood via WorldID
 ///     and allows a person to reclaim an IBT onto a new address if their current address ever gets compromised.
 contract IrisBoundToken is ERC721Enumerable {
+    using Strings for address;
+    using Strings for uint256;
+
     /// @notice WorldID instance
     IWorldID public immutable worldId;
     /// @notice WorldID group, always 1
@@ -19,12 +24,23 @@ contract IrisBoundToken is ERC721Enumerable {
     ///     An address can only own an IBT once, so as to prevent a malicious user from replaying
     ///     a proof that can steal back an IBT.
     mapping(address => bool) public addressHasBeenUsed;
+    /// @notice EPNS
+    IPUSHCommInterface public immutable epns;
+    /// @notice EPNS channel to push notifications to
+    address public immutable epnsChannel;
 
-    constructor(IWorldID worldId_, uint256 groupId_)
-        ERC721("Iris-Bound Token", "IBT")
-    {
+    constructor(
+        string memory tokenName_,
+        string memory tokenSymbol_,
+        IWorldID worldId_,
+        uint256 groupId_,
+        IPUSHCommInterface epns_,
+        address epnsChannel_
+    ) ERC721(tokenName_, tokenSymbol_) {
         worldId = worldId_;
         groupId = groupId_;
+        epns = epns_;
+        epnsChannel = epnsChannel_;
     }
 
     /// @notice Hash any bytes input and truncate to finite field
@@ -88,6 +104,27 @@ contract IrisBoundToken is ERC721Enumerable {
         nullifierHashToTokenId[nullifierHash] = tokenId;
 
         _safeMint(msg.sender, tokenId);
+
+        epns.sendNotification(
+            epnsChannel,
+            address(this),
+            bytes(
+                string(
+                    abi.encodePacked(
+                        "0",
+                        "+",
+                        "1", // broadcast
+                        "+",
+                        "Mint", // title
+                        "+",
+                        "IBT #",
+                        tokenId.toString(),
+                        " minted to ",
+                        msg.sender.toHexString()
+                    )
+                )
+            )
+        );
     }
 
     /// @notice Reclaim the token from the current owner by providing proof that the caller is
@@ -113,6 +150,27 @@ contract IrisBoundToken is ERC721Enumerable {
         address currentOwner = ownerOf(tokenId);
         // Transfer the IBT from the current owner to the caller
         _safeTransfer(currentOwner, msg.sender, tokenId, bytes(""));
+
+        epns.sendNotification(
+            epnsChannel,
+            address(this),
+            bytes(
+                string(
+                    abi.encodePacked(
+                        "0",
+                        "+",
+                        "1", // broadcast
+                        "+",
+                        "Mint", // title
+                        "+",
+                        "IBT #",
+                        tokenId.toString(),
+                        " reclaimed to ",
+                        msg.sender.toHexString()
+                    )
+                )
+            )
+        );
     }
 
     /// @notice Funny picture of capybara.
