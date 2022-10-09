@@ -29,6 +29,11 @@ const config: HardhatUserConfig = {
             chainId: 1,
             accounts: [process.env.MAINNET_PK as string],
         },
+        matic: {
+            url: process.env.MATIC_URL as string,
+            chainId: 137,
+            accounts: [process.env.MAINNET_PK as string],
+        },
     },
     gasReporter: {
         enabled: true,
@@ -38,6 +43,8 @@ const config: HardhatUserConfig = {
     etherscan: {
         apiKey: {
             mainnet: process.env.ETHERSCAN_API_KEY as string,
+            polygonMumbai: process.env.POLYGONSCAN_API_KEY as string,
+            polygon: process.env.POLYGONSCAN_API_KEY as string,
         },
     },
     dependencyCompiler: {

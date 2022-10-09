@@ -8,7 +8,8 @@
     "format": "yarn prettier --write .",
     "clean": "yarn hardhat clean",
     "build": "yarn hardhat compile",
-    "test": "yarn hardhat test"
+    "test": "yarn hardhat test",
+    "deploy:ibt": "yarn hardhat --network matic run scripts/deploy-ibt.ts"
   },
   "author": "Kevin Charm <lucky@ape.engineer>",
   "license": "Apache-2.0",
