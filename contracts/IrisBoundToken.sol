@@ -115,14 +115,10 @@ contract IrisBoundToken is ERC721Enumerable {
         _safeTransfer(currentOwner, msg.sender, tokenId, bytes(""));
     }
 
-    /// @dev TODO
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override
-        returns (string memory)
-    {
-        return "";
+    /// @notice Funny picture of capybara.
+    function tokenURI(uint256) public pure override returns (string memory) {
+        return
+            "ipfs://bafkreidcgrbaqk3y2wjlpmum4ipfgdgnwvltfg3ujbap7w4kgcm4evbj54";
     }
 
     /// @notice Modified `transferFrom` implementation that deviates from ERC-721: tokens
